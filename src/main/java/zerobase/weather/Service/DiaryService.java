@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.weather.domain.Diary;
 import zerobase.weather.repository.DiaryRepository;
@@ -24,14 +25,18 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
 
+
+
     public DiaryService(DiaryRepository diaryRepository) {
         this.diaryRepository = diaryRepository;
     }
 
     @Value("${openweathermap.key}") //application.properties에 있음
     //value로 분리하는 이유는 협업에서 test, 개발환경 등 다양한 db에 접근하기 위해서
+
     private String apiKey;
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createDiary(LocalDate date, String text) {
 
         //open weather map에서 날씨 데이터 가져오기
