@@ -6,8 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-import zerobase.weather.domain.Memo;
-import zerobase.weather.repository.JpaMemoRepository;
 
 import java.util.List;
 
