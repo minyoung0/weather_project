@@ -39,7 +39,4 @@
 - **Swagger UI**  
   API 문서 자동화 및 테스트 환경 제공  
 
----
-
-## 🗂️ Project Structure (예시)
 
