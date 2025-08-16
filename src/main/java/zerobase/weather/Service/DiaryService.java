@@ -3,14 +3,18 @@ package zerobase.weather.Service;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.pattern.PathPatternParser;
+import zerobase.weather.WeatherApplication;
 import zerobase.weather.domain.DateWeather;
 import zerobase.weather.domain.Diary;
+import zerobase.weather.error.InvalidDate;
 import zerobase.weather.repository.DateWeatherRepository;
 import zerobase.weather.repository.DiaryRepository;
 
@@ -43,14 +47,18 @@ public class DiaryService {
 
     private String apiKey;
 
+    private static final Logger logger= LoggerFactory.getLogger(WeatherApplication.class);
+
     @Transactional
     @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시 0분 0초 마다
     public void saveWeatherDate(){
+        logger.info("데이터 잘 가져옴");
         dateWeatherRepository.save(getWeatherFromApi());
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createDiary(LocalDate date, String text) {
+        logger.info("started to create diary");
 
         //기존 코드
         //api에서 가져온 데이터 일일이 set해주기
@@ -70,6 +78,9 @@ public class DiaryService {
         nowDiary.setText(text);
         nowDiary.setDate(date);
         diaryRepository.save(nowDiary);
+        logger.info("end to create diary");
+//        logger.error();
+//        logger.warn();
     }
     private DateWeather getDateWeather(LocalDate date){
         //데이터 있는지 확인
@@ -102,6 +113,10 @@ public class DiaryService {
     }
 
     public List<Diary> readDiary(LocalDate date){
+        if(date.isAfter(LocalDate.ofYearDay(3050,1))){
+            throw new InvalidDate();
+        }
+        logger.debug("read diary");
         return diaryRepository.findAllByDate(date);
     }
 
